@@ -470,7 +470,7 @@ impl ShortCrypt {
         let len = bytes.len();
 
         if len < 1 {
-            return Err("The QR code text is incorrect.");
+            return Err("The QR code alphanumeric text is incorrect.");
         }
 
         let base_index = {
@@ -486,14 +486,14 @@ impl ShortCrypt {
         let base = string_32_to_u8!(bytes[base_index]);
 
         if base > 31 {
-            return Err("The QR code text is incorrect.");
+            return Err("The QR code alphanumeric text is incorrect.");
         }
 
-        let encrypted_base32 = String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat()).map_err(|_| "The QR code text is incorrect.")?;
+        let encrypted_base32 = String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat()).map_err(|_| "The QR code alphanumeric text is incorrect.")?;
 
         let encrypted = match base32::decode(base32::Alphabet::RFC4648 { padding: false }, &encrypted_base32) {
             Some(t) => t,
-            None => return Err("The QR code text is incorrect.")
+            None => return Err("The QR code alphanumeric text is incorrect.")
         };
 
         self.decrypt(&(base, encrypted))
@@ -504,7 +504,7 @@ impl ShortCrypt {
         let len = bytes.len();
 
         if len < 1 {
-            return Err("The QR code text is incorrect.");
+            return Err("The QR code alphanumeric text is incorrect.");
         }
 
         let base_index = {
@@ -520,14 +520,14 @@ impl ShortCrypt {
         let base = string_32_to_u8!(bytes[base_index]);
 
         if base > 31 {
-            return Err("The QR code text is incorrect.");
+            return Err("The QR code alphanumeric text is incorrect.");
         }
 
-        let encrypted_base32 = String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat()).map_err(|_| "The QR code text is incorrect.")?;
+        let encrypted_base32 = String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat()).map_err(|_| "The QR code alphanumeric text is incorrect.")?;
 
         let encrypted = match base32::decode(base32::Alphabet::RFC4648 { padding: false }, &encrypted_base32) {
             Some(t) => t,
-            None => return Err("The QR code text is incorrect.")
+            None => return Err("The QR code alphanumeric text is incorrect.")
         };
 
         let len = encrypted.len();
