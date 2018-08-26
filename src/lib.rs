@@ -147,7 +147,7 @@ fn reverse_u64(mut v: u64) -> u64 {
     v = ((v >> 2) & 0x3333333333333333u64) | ((v & 0x3333333333333333u64) << 2);
     v = ((v >> 4) & 0x0F0F0F0F0F0F0F0Fu64) | ((v & 0x0F0F0F0F0F0F0F0Fu64) << 4);
     v = ((v >> 8) & 0x00FF00FF00FF00FFu64) | ((v & 0x00FF00FF00FF00FFu64) << 8);
-    v = ((v >> 16) & 0x0000FFFF0000FFFFu64) | ((v & &0x0000FFFF0000FFFFu64) << 16);
+    v = ((v >> 16) & 0x0000FFFF0000FFFFu64) | ((v & 0x0000FFFF0000FFFFu64) << 16);
     (v >> 32) | (v << 32)
 }
 
