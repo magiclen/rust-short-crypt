@@ -6,7 +6,7 @@
 //!
 //! ## Examples
 //!
-//! `encrypt` method can create a `Cipher` tuple separating a **base** and a **body** of the cipher. The size of a **base** is 4 bits, and the size of a **body** is equal to the plaintext.
+//! `encrypt` method can create a `Cipher` tuple separating into a **base** and a **body** of the cipher. The size of a **base** is 4 bits, and the size of a **body** is equal to the plaintext.
 //!
 //! ```
 //! extern crate short_crypt;

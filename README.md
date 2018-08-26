@@ -10,7 +10,7 @@ The most important thing is that a cipher is only **4 bits** larger than its pla
 
 ## Examples
 
-`encrypt` method can create a `Cipher` tuple separating a **base** and a **body** of the cipher. The size of a **base** is 4 bits, and the size of a **body** is equal to the plaintext.
+`encrypt` method can create a `Cipher` tuple separating into a **base** and a **body** of the cipher. The size of a **base** is 4 bits, and the size of a **body** is equal to the plaintext.
 
 ```rust
 extern crate short_crypt;
