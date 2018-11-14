@@ -1,68 +1,70 @@
-//! # ShortCrypt
-//!
-//! ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance.
-//! Even if these data are similar, the ciphers are still pretty different.
-//! The most important thing is that a cipher is only **4 bits** larger than its plaintext so that it is suitable for data used in an URL or a QR Code. Besides these, it is also an ideal candidate for serial number generation.
-//!
-//! ## Examples
-//!
-//! `encrypt` method can create a `Cipher` tuple separating into a **base** and a **body** of the cipher. The size of a **base** is 4 bits, and the size of a **body** is equal to the plaintext.
-//!
-//! ```
-//! extern crate short_crypt;
-//!
-//! use short_crypt::ShortCrypt;
-//!
-//! let sc = ShortCrypt::new("magickey");
-//!
-//! assert_eq!((8, [216, 78, 214, 199, 157, 190, 78, 250].to_vec()), sc.encrypt("articles"));
-//! assert_eq!("articles".as_bytes().to_vec(), sc.decrypt(&(8, vec![216, 78, 214, 199, 157, 190, 78, 250])).unwrap());
-//!
-//! ```
-//!
-//! `encrypt_to_url_component` method is common for encryption in most cases. After ShortCrypt `encrypt` a plaintext, it encodes the cipher into a random-like string based on Base64-URL format so that it can be concatenated with URLs.
-//!
-//! ```
-//! extern crate short_crypt;
-//!
-//! use short_crypt::ShortCrypt;
-//!
-//! let sc = ShortCrypt::new("magickey");
-//!
-//! assert_eq!("2E87Wx52-Tvo", sc.encrypt_to_url_component("articles"));
-//! assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_url_component("2E87Wx52-Tvo").unwrap());
-//! ```
-//!
-//! `encrypt_to_qr_code_alphanumeric` method is usually used for encrypting something into a QR code. After ShortCrypt `encrypt` a plaintext, it encodes the cipher into a random-like string based on Base32 format so that it can be inserted into a QR code with the compatibility with alphanumeric mode.
-//!
-//! ```
-//! extern crate short_crypt;
-//!
-//! use short_crypt::ShortCrypt;
-//!
-//! let sc = ShortCrypt::new("magickey");
-//!
-//! assert_eq!("3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric("articles"));
-//! assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_qr_code_alphanumeric("3BHNNR45XZH8PU").unwrap());
-//! ```
-//!
-//! Besides, in order to reduce the copy times of strings, you can also use `encrypt_to_url_component_and_push_to_string`, `encrypt_to_qr_code_alphanumeric_and_push_to_string` methods to use the same memory space.
-//!
-//! ```
-//! extern crate short_crypt;
-//!
-//! use short_crypt::ShortCrypt;
-//!
-//! let sc = ShortCrypt::new("magickey");
-//!
-//! let url = "https://magiclen.org/".to_string();
-//!
-//! assert_eq!("https://magiclen.org/2E87Wx52-Tvo", sc.encrypt_to_url_component_and_push_to_string("articles", url));
-//!
-//! let url = "https://magiclen.org/".to_string();
-//!
-//! assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric_and_push_to_string("articles", url));
-//! ```
+/*!
+# ShortCrypt
+
+ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance.
+Even if these data are similar, the ciphers are still pretty different.
+The most important thing is that a cipher is only **4 bits** larger than its plaintext so that it is suitable for data used in an URL or a QR Code. Besides these, it is also an ideal candidate for serial number generation.
+
+## Examples
+
+`encrypt` method can create a `Cipher` tuple separating into a **base** and a **body** of the cipher. The size of a **base** is 4 bits, and the size of a **body** is equal to the plaintext.
+
+```rust
+extern crate short_crypt;
+
+use short_crypt::ShortCrypt;
+
+let sc = ShortCrypt::new("magickey");
+
+assert_eq!((8, [216, 78, 214, 199, 157, 190, 78, 250].to_vec()), sc.encrypt("articles"));
+assert_eq!("articles".as_bytes().to_vec(), sc.decrypt(&(8, vec![216, 78, 214, 199, 157, 190, 78, 250])).unwrap());
+
+```
+
+`encrypt_to_url_component` method is common for encryption in most cases. After ShortCrypt `encrypt` a plaintext, it encodes the cipher into a random-like string based on Base64-URL format so that it can be concatenated with URLs.
+
+```rust
+extern crate short_crypt;
+
+use short_crypt::ShortCrypt;
+
+let sc = ShortCrypt::new("magickey");
+
+assert_eq!("2E87Wx52-Tvo", sc.encrypt_to_url_component("articles"));
+assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_url_component("2E87Wx52-Tvo").unwrap());
+```
+
+`encrypt_to_qr_code_alphanumeric` method is usually used for encrypting something into a QR code. After ShortCrypt `encrypt` a plaintext, it encodes the cipher into a random-like string based on Base32 format so that it can be inserted into a QR code with the compatibility with alphanumeric mode.
+
+```rust
+extern crate short_crypt;
+
+use short_crypt::ShortCrypt;
+
+let sc = ShortCrypt::new("magickey");
+
+assert_eq!("3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric("articles"));
+assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_qr_code_alphanumeric("3BHNNR45XZH8PU").unwrap());
+```
+
+Besides, in order to reduce the copy times of strings, you can also use `encrypt_to_url_component_and_push_to_string`, `encrypt_to_qr_code_alphanumeric_and_push_to_string` methods to use the same memory space.
+
+```rust
+extern crate short_crypt;
+
+use short_crypt::ShortCrypt;
+
+let sc = ShortCrypt::new("magickey");
+
+let url = "https://magiclen.org/".to_string();
+
+assert_eq!("https://magiclen.org/2E87Wx52-Tvo", sc.encrypt_to_url_component_and_push_to_string("articles", url));
+
+let url = "https://magiclen.org/".to_string();
+
+assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric_and_push_to_string("articles", url));
+```
+*/
 
 extern crate crc_any;
 pub extern crate base64_url;
@@ -153,18 +155,20 @@ fn reverse_u64(mut v: u64) -> u64 {
 
 impl ShortCrypt {
     /// Create a new ShortCrypt instance.
-    pub fn new(key: &str) -> ShortCrypt {
+    pub fn new<S: AsRef<str>>(key: S) -> ShortCrypt {
+        let key_bytes = key.as_ref().as_bytes();
+
         let hashed_key = {
             let mut crc64ecma = CRC::crc64ecma();
 
-            crc64ecma.digest(key.as_bytes());
+            crc64ecma.digest(key_bytes);
 
             crc64ecma.get_crc_array().0
         };
 
         let mut key_sum = 0u64;
 
-        for &n in key.as_bytes() {
+        for &n in key_bytes {
             key_sum = key_sum.wrapping_add(n as u64);
         }
 
@@ -349,8 +353,8 @@ impl ShortCrypt {
         output
     }
 
-    pub fn decrypt_url_component(&self, url_component: &str) -> Result<Vec<u8>, &'static str> {
-        let bytes = url_component.as_bytes();
+    pub fn decrypt_url_component<S: AsRef<str>>(&self, url_component: S) -> Result<Vec<u8>, &'static str> {
+        let bytes = url_component.as_ref().as_bytes();
         let len = bytes.len();
 
         if len < 1 {
@@ -360,7 +364,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in url_component.as_bytes() {
+            for &n in bytes {
                 sum = sum.wrapping_add(n as u64);
             }
 
@@ -380,8 +384,8 @@ impl ShortCrypt {
         self.decrypt(&(base, encrypted))
     }
 
-    pub fn decrypt_url_component_and_push_to_vec(&self, url_component: &str, mut output: Vec<u8>) -> Result<Vec<u8>, &'static str> {
-        let bytes = url_component.as_bytes();
+    pub fn decrypt_url_component_and_push_to_vec<S: AsRef<str>>(&self, url_component: S, mut output: Vec<u8>) -> Result<Vec<u8>, &'static str> {
+        let bytes = url_component.as_ref().as_bytes();
         let len = bytes.len();
 
         if len < 1 {
@@ -391,7 +395,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in url_component.as_bytes() {
+            for &n in bytes {
                 sum = sum.wrapping_add(n as u64);
             }
 
@@ -465,8 +469,8 @@ impl ShortCrypt {
         output
     }
 
-    pub fn decrypt_qr_code_alphanumeric(&self, qr_code_alphanumeric: &str) -> Result<Vec<u8>, &'static str> {
-        let bytes = qr_code_alphanumeric.as_bytes();
+    pub fn decrypt_qr_code_alphanumeric<S: AsRef<str>>(&self, qr_code_alphanumeric: S) -> Result<Vec<u8>, &'static str> {
+        let bytes = qr_code_alphanumeric.as_ref().as_bytes();
         let len = bytes.len();
 
         if len < 1 {
@@ -476,7 +480,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in qr_code_alphanumeric.as_bytes() {
+            for &n in bytes {
                 sum = sum.wrapping_add(n as u64);
             }
 
@@ -499,8 +503,8 @@ impl ShortCrypt {
         self.decrypt(&(base, encrypted))
     }
 
-    pub fn decrypt_qr_code_alphanumeric_and_push_to_vec(&self, qr_code_alphanumeric: &str, mut output: Vec<u8>) -> Result<Vec<u8>, &'static str> {
-        let bytes = qr_code_alphanumeric.as_bytes();
+    pub fn decrypt_qr_code_alphanumeric_and_push_to_vec<S: AsRef<str>>(&self, qr_code_alphanumeric: S, mut output: Vec<u8>) -> Result<Vec<u8>, &'static str> {
+        let bytes = qr_code_alphanumeric.as_ref().as_bytes();
         let len = bytes.len();
 
         if len < 1 {
@@ -510,7 +514,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in qr_code_alphanumeric.as_bytes() {
+            for &n in bytes {
                 sum = sum.wrapping_add(n as u64);
             }
 
@@ -537,97 +541,5 @@ impl ShortCrypt {
         self.decrypt_inner(base, &encrypted, &mut output);
 
         Ok(output)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_encrypt() {
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!((8, [216, 78, 214, 199, 157, 190, 78, 250].to_vec()), sc.encrypt("articles"));
-    }
-
-    #[test]
-    fn test_decrypt() {
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("articles".as_bytes().to_vec(), sc.decrypt(&(8, vec![216, 78, 214, 199, 157, 190, 78, 250])).unwrap());
-    }
-
-    #[test]
-    fn test_encrypt_decrypt() {
-        let sc = ShortCrypt::new("magickey");
-
-        let data = "articles";
-
-        assert_eq!(data.as_bytes().to_vec(), sc.decrypt(&sc.encrypt(data)).unwrap());
-    }
-
-    #[test]
-    fn test_encrypt_to_url_component() {
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("2E87Wx52-Tvo", sc.encrypt_to_url_component("articles"));
-    }
-
-    #[test]
-    fn test_encrypt_to_url_component_and_push_to_string() {
-        let url = "https://magiclen.org/".to_string();
-
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("https://magiclen.org/2E87Wx52-Tvo", sc.encrypt_to_url_component_and_push_to_string("articles", url));
-    }
-
-    #[test]
-    fn test_decrypt_url_component() {
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_url_component("2E87Wx52-Tvo").unwrap());
-    }
-
-    #[test]
-    fn test_decrypt_url_component_and_push_to_vec() {
-        let url = "https://magiclen.org/".as_bytes().to_vec();
-
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("https://magiclen.org/articles".as_bytes().to_vec(), sc.decrypt_url_component_and_push_to_vec("2E87Wx52-Tvo", url).unwrap());
-    }
-
-    #[test]
-    fn test_encrypt_to_qr_code_alphanumeric() {
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric("articles"));
-    }
-
-    #[test]
-    fn test_encrypt_to_qr_code_alphanumeric_and_push_to_string() {
-        let url = "https://magiclen.org/".to_string();
-
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric_and_push_to_string("articles", url));
-    }
-
-    #[test]
-    fn test_decrypt_qr_code_alphanumeric() {
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_qr_code_alphanumeric("3BHNNR45XZH8PU").unwrap());
-    }
-
-    #[test]
-    fn test_decrypt_qr_code_alphanumeric_and_push_to_vec() {
-        let url = "https://magiclen.org/".as_bytes().to_vec();
-
-        let sc = ShortCrypt::new("magickey");
-
-        assert_eq!("https://magiclen.org/articles".as_bytes().to_vec(), sc.decrypt_qr_code_alphanumeric_and_push_to_vec("3BHNNR45XZH8PU", url).unwrap());
     }
 }
