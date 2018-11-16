@@ -329,12 +329,14 @@ impl ShortCrypt {
         result
     }
 
-    pub fn encrypt_to_url_component_and_push_to_string<T: ?Sized + AsRef<[u8]>>(&self, data: &T, output: String) -> String {
+    pub fn encrypt_to_url_component_and_push_to_string<T: ?Sized + AsRef<[u8]>, S: Into<String>>(&self, data: &T, output: S) -> String {
         let (base, encrypted) = self.encrypt(data);
 
         let base = u8_to_string_64!(base);
 
         let base_char = base as char;
+
+        let output = output.into();
 
         let original_len = output.len();
 
@@ -445,12 +447,14 @@ impl ShortCrypt {
         result
     }
 
-    pub fn encrypt_to_qr_code_alphanumeric_and_push_to_string<T: ?Sized + AsRef<[u8]>>(&self, data: &T, mut output: String) -> String {
+    pub fn encrypt_to_qr_code_alphanumeric_and_push_to_string<T: ?Sized + AsRef<[u8]>, S: Into<String>>(&self, data: &T, output: S) -> String {
         let (base, encrypted) = self.encrypt(data);
 
         let base = u8_to_string_32!(base);
 
         let base_char = base as char;
+
+        let mut output = output.into();
 
         let original_len = output.len();
 
