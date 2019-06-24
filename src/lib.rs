@@ -71,6 +71,7 @@ pub extern crate base64_url;
 pub extern crate base32;
 
 use std::mem::transmute;
+use std::fmt::{self, Formatter, Debug};
 
 pub use base64_url::base64;
 
@@ -82,6 +83,21 @@ pub type Cipher = (u8, Vec<u8>);
 pub struct ShortCrypt {
     hashed_key: [u8; 8],
     key_sum_rev: u64,
+}
+
+impl Debug for ShortCrypt {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
+        if f.alternate() {
+            let debug_text = format!("ShortCrypt {{\n    hashed_key: {:#?},\n    key_sum_rev: {:X}\n}}", self.hashed_key.as_ref(), self.key_sum_rev);
+
+            f.pad(&debug_text)
+        } else {
+            let debug_text = format!("ShortCrypt {{ hashed_key: {:?}, key_sum_rev: {:X} }}", self.hashed_key.as_ref(), self.key_sum_rev);
+
+            f.pad(&debug_text)
+        }
+    }
 }
 
 macro_rules! u8_to_string_64 {
