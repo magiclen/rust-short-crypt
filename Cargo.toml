@@ -1,6 +1,6 @@
 [package]
 name = "short-crypt"
-version = "1.0.7"
+version = "1.0.8"
 authors = ["Magic Len <len@magiclen.org>"]
 repository = "https://github.com/magiclen/rust-short-crypt"
 homepage = "https://magiclen.org/short-crypt"
@@ -15,6 +15,6 @@ travis-ci = { repository = "magiclen/rust-short-crypt", branch = "master" }
 appveyor = { repository = "magiclen/rust-short-crypt", branch = "master", service = "github" }
 
 [dependencies]
-crc-any = "1.0.0"
+crc-any = "2"
 base64-url = "1.1.7"
 base32 = "0.4"

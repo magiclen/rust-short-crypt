@@ -75,7 +75,7 @@ use std::fmt::{self, Formatter, Debug};
 
 pub use base64_url::base64;
 
-use crc_any::CRC;
+use crc_any::{CRCu64, CRCu8};
 
 /// A tuple. The first `u8` value is the **base** which only takes 4 bits. The second `Vec<u8>` value is the **body** whose size is equal to the plaintext. You can use your own algorithms to combine them together, or just use `encrypt_to_url_component` or `encrypt_to_qr_code_alphanumeric` to output them as a random-like string.
 pub type Cipher = (u8, Vec<u8>);
@@ -175,11 +175,13 @@ impl ShortCrypt {
         let key_bytes = key.as_ref().as_bytes();
 
         let hashed_key = {
-            let mut crc64ecma = CRC::crc64ecma();
+            let mut crc64ecma = CRCu64::crc64();
 
             crc64ecma.digest(key_bytes);
 
-            crc64ecma.get_crc_array().0
+            unsafe {
+                transmute(crc64ecma.get_crc().to_be())
+            }
         };
 
         let mut key_sum = 0u64;
@@ -202,7 +204,7 @@ impl ShortCrypt {
         let len = data.len();
 
         let hashed_value = {
-            let mut crc8 = CRC::crc8cdma();
+            let mut crc8 = CRCu8::crc8cdma2000();
 
             crc8.digest(data);
             crc8.get_crc() as u8
@@ -230,19 +232,22 @@ impl ShortCrypt {
             transmute(sum.to_be())
         };
 
-        let hashed_vec = {
-            let mut crc64ecma = CRC::crc64ecma();
+        let hashed_array: [u8; 8] = {
+            let mut crc64ecma = CRCu64::crc64();
 
             crc64ecma.digest(&[m]);
             crc64ecma.digest(&sum);
-            crc64ecma.get_crc_array().0
+
+            unsafe {
+                transmute(crc64ecma.get_crc().to_be())
+            }
         };
 
         let mut path = Vec::with_capacity(len);
 
         for i in 0..len {
             let index = i % 8;
-            path.push((hashed_vec[index] ^ self.hashed_key[index]) as usize % len);
+            path.push((hashed_array[index] ^ self.hashed_key[index]) as usize % len);
         }
 
         for (i, &p) in path.iter().enumerate() {
@@ -288,12 +293,15 @@ impl ShortCrypt {
             transmute(sum.to_be())
         };
 
-        let hashed_vec = {
-            let mut crc64ecma = CRC::crc64ecma();
+        let hashed_array: [u8; 8] = {
+            let mut crc64ecma = CRCu64::crc64();
 
             crc64ecma.digest(&[m]);
             crc64ecma.digest(&sum);
-            crc64ecma.get_crc_array().0
+
+            unsafe {
+                transmute(crc64ecma.get_crc().to_be())
+            }
         };
 
 
@@ -301,7 +309,7 @@ impl ShortCrypt {
 
         for i in 0..len {
             let index = i % 8;
-            path.push((hashed_vec[index] ^ self.hashed_key[index]) as usize % len);
+            path.push((hashed_array[index] ^ self.hashed_key[index]) as usize % len);
         }
 
         let mut data = data.to_vec();
