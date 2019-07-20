@@ -69,6 +69,8 @@ assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanum
 extern crate crc_any;
 pub extern crate base64_url;
 pub extern crate base32;
+#[macro_use]
+extern crate debug_helper;
 
 use std::mem::transmute;
 use std::fmt::{self, Formatter, Debug};
@@ -88,15 +90,13 @@ pub struct ShortCrypt {
 impl Debug for ShortCrypt {
     #[inline]
     fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
-        if f.alternate() {
-            let debug_text = format!("ShortCrypt {{\n    hashed_key: {:#?},\n    key_sum_rev: {:X}\n}}", self.hashed_key.as_ref(), self.key_sum_rev);
-
-            f.pad(&debug_text)
+        let data = if f.alternate() {
+            format!("{:#?}", self.hashed_key.as_ref())
         } else {
-            let debug_text = format!("ShortCrypt {{ hashed_key: {:?}, key_sum_rev: {:X} }}", self.hashed_key.as_ref(), self.key_sum_rev);
+            format!("{:?}", self.hashed_key.as_ref())
+        };
 
-            f.pad(&debug_text)
-        }
+        impl_debug_for_struct!(ShortCrypt, f, self, (.hashed_key, "{}", data), (.key_sum_rev, "{:X}", self.key_sum_rev));
     }
 }
 
