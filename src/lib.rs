@@ -90,13 +90,7 @@ pub struct ShortCrypt {
 impl Debug for ShortCrypt {
     #[inline]
     fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
-        let data = if f.alternate() {
-            format!("{:#?}", self.hashed_key.as_ref())
-        } else {
-            format!("{:?}", self.hashed_key.as_ref())
-        };
-
-        impl_debug_for_struct!(ShortCrypt, f, self, (.hashed_key, "{}", data), (.key_sum_rev, "{:X}", self.key_sum_rev));
+        impl_debug_for_struct!(ShortCrypt, f, self, let .hashed_key = self.hashed_key.as_ref(), (.key_sum_rev, "{:X}", self.key_sum_rev));
     }
 }
 
