@@ -1,6 +1,6 @@
 [package]
 name = "short-crypt"
-version = "1.0.11"
+version = "1.0.12"
 authors = ["Magic Len <len@magiclen.org>"]
 repository = "https://github.com/magiclen/rust-short-crypt"
 homepage = "https://magiclen.org/short-crypt"
@@ -10,9 +10,9 @@ description= "ShortCrypt is a very simple encryption library, which aims to encr
 readme = "README.md"
 license = "MIT"
 
-[badges]
-travis-ci = { repository = "magiclen/rust-short-crypt", branch = "master" }
-appveyor = { repository = "magiclen/rust-short-crypt", branch = "master", service = "github" }
+[badges.travis-ci]
+repository = "magiclen/rust-short-crypt"
+branch = "master"
 
 [dependencies]
 crc-any = "2"
