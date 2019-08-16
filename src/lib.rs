@@ -154,15 +154,6 @@ macro_rules! string_32_to_u8 {
     };
 }
 
-fn reverse_u64(mut v: u64) -> u64 {
-    v = ((v >> 1) & 0x5555555555555555u64) | ((v & 0x5555555555555555u64) << 1);
-    v = ((v >> 2) & 0x3333333333333333u64) | ((v & 0x3333333333333333u64) << 2);
-    v = ((v >> 4) & 0x0F0F0F0F0F0F0F0Fu64) | ((v & 0x0F0F0F0F0F0F0F0Fu64) << 4);
-    v = ((v >> 8) & 0x00FF00FF00FF00FFu64) | ((v & 0x00FF00FF00FF00FFu64) << 8);
-    v = ((v >> 16) & 0x0000FFFF0000FFFFu64) | ((v & 0x0000FFFF0000FFFFu64) << 16);
-    (v >> 32) | (v << 32)
-}
-
 impl ShortCrypt {
     /// Create a new ShortCrypt instance.
     pub fn new<S: AsRef<str>>(key: S) -> ShortCrypt {
@@ -184,7 +175,7 @@ impl ShortCrypt {
             key_sum = key_sum.wrapping_add(n as u64);
         }
 
-        let key_sum_rev = reverse_u64(key_sum);
+        let key_sum_rev = key_sum.reverse_bits();
 
         ShortCrypt {
             hashed_key,
