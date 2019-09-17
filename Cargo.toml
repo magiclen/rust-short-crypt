@@ -1,7 +1,8 @@
 [package]
 name = "short-crypt"
-version = "1.0.13"
+version = "1.0.14"
 authors = ["Magic Len <len@magiclen.org>"]
+edition = "2018"
 repository = "https://github.com/magiclen/rust-short-crypt"
 homepage = "https://magiclen.org/short-crypt"
 keywords = ["crypto", "qrcode", "url", "encrypt", "decrypt"]

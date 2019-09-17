@@ -66,14 +66,14 @@ assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanum
 ```
 */
 
-extern crate crc_any;
-pub extern crate base64_url;
 pub extern crate base32;
+pub extern crate base64_url;
+extern crate crc_any;
 #[macro_use]
 extern crate debug_helper;
 
+use std::fmt::{self, Debug, Formatter};
 use std::mem::transmute;
-use std::fmt::{self, Formatter, Debug};
 
 pub use base64_url::base64;
 
@@ -95,63 +95,55 @@ impl Debug for ShortCrypt {
 }
 
 macro_rules! u8_to_string_64 {
-    ( $i:expr ) => {
-        {
-            if $i < 10 {
-                $i + b'0'
-            } else if $i >= 10 && $i < 36 {
-                $i - 10 + b'A'
-            } else if $i >= 36 && $i < 62 {
-                 $i - 36 + b'a'
-            } else if $i == 62 {
-                b'-'
-            } else {
-                b'_'
-            }
+    ($i:expr) => {{
+        if $i < 10 {
+            $i + b'0'
+        } else if $i >= 10 && $i < 36 {
+            $i - 10 + b'A'
+        } else if $i >= 36 && $i < 62 {
+            $i - 36 + b'a'
+        } else if $i == 62 {
+            b'-'
+        } else {
+            b'_'
         }
-    };
+    }};
 }
 
 macro_rules! string_64_to_u8 {
-    ( $c:expr ) => {
-        {
-            if $c >= b'0' && $c <= b'9' {
-                $c - b'0'
-            } else if $c >= b'A' && $c < b'Z' {
-                $c + 10 - b'A'
-            } else if $c >= b'a' && $c < b'z' {
-                 $c + 36 - b'a'
-            } else if $c == b'-' {
-                62
-            } else {
-                63
-            }
+    ($c:expr) => {{
+        if $c >= b'0' && $c <= b'9' {
+            $c - b'0'
+        } else if $c >= b'A' && $c < b'Z' {
+            $c + 10 - b'A'
+        } else if $c >= b'a' && $c < b'z' {
+            $c + 36 - b'a'
+        } else if $c == b'-' {
+            62
+        } else {
+            63
         }
-    };
+    }};
 }
 
 macro_rules! u8_to_string_32 {
-    ( $i:expr ) => {
-        {
-            if $i < 10 {
-                $i + b'0'
-            } else {
-                $i - 10 + b'A'
-            }
+    ($i:expr) => {{
+        if $i < 10 {
+            $i + b'0'
+        } else {
+            $i - 10 + b'A'
         }
-    };
+    }};
 }
 
 macro_rules! string_32_to_u8 {
-    ( $c:expr ) => {
-        {
-            if $c >= b'0' && $c <= b'9' {
-                $c - b'0'
-            } else {
-                $c + 10 - b'A'
-            }
+    ($c:expr) => {{
+        if $c >= b'0' && $c <= b'9' {
+            $c - b'0'
+        } else {
+            $c + 10 - b'A'
         }
-    };
+    }};
 }
 
 impl ShortCrypt {
@@ -164,15 +156,13 @@ impl ShortCrypt {
 
             crc64ecma.digest(key_bytes);
 
-            unsafe {
-                transmute(crc64ecma.get_crc().to_be())
-            }
+            unsafe { transmute(crc64ecma.get_crc().to_be()) }
         };
 
         let mut key_sum = 0u64;
 
         for &n in key_bytes {
-            key_sum = key_sum.wrapping_add(n as u64);
+            key_sum = key_sum.wrapping_add(u64::from(n));
         }
 
         let key_sum_rev = key_sum.reverse_bits();
@@ -200,7 +190,7 @@ impl ShortCrypt {
         let mut encrypted = Vec::with_capacity(len);
 
         let mut m = base;
-        let mut sum = base as u64;
+        let mut sum = u64::from(base);
 
         for (i, d) in data.iter().enumerate() {
             let offset = self.hashed_key[i % 8] ^ base;
@@ -210,12 +200,10 @@ impl ShortCrypt {
             encrypted.push(v);
 
             m ^= v;
-            sum = sum.wrapping_add(v as u64);
+            sum = sum.wrapping_add(u64::from(v));
         }
 
-        let sum: [u8; 8] = unsafe {
-            transmute(sum.to_be())
-        };
+        let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
 
         let hashed_array: [u8; 8] = {
             let mut crc64ecma = CRCu64::crc64();
@@ -223,9 +211,7 @@ impl ShortCrypt {
             crc64ecma.digest(&[m]);
             crc64ecma.digest(&sum);
 
-            unsafe {
-                transmute(crc64ecma.get_crc().to_be())
-            }
+            unsafe { transmute(crc64ecma.get_crc().to_be()) }
         };
 
         let mut path = Vec::with_capacity(len);
@@ -267,16 +253,14 @@ impl ShortCrypt {
         let len = data.len();
 
         let mut m = base;
-        let mut sum = base as u64;
+        let mut sum = u64::from(base);
 
         for &v in data.iter() {
             m ^= v;
-            sum = sum.wrapping_add(v as u64);
+            sum = sum.wrapping_add(u64::from(v));
         }
 
-        let sum: [u8; 8] = unsafe {
-            transmute(sum.to_be())
-        };
+        let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
 
         let hashed_array: [u8; 8] = {
             let mut crc64ecma = CRCu64::crc64();
@@ -284,11 +268,8 @@ impl ShortCrypt {
             crc64ecma.digest(&[m]);
             crc64ecma.digest(&sum);
 
-            unsafe {
-                transmute(crc64ecma.get_crc().to_be())
-            }
+            unsafe { transmute(crc64ecma.get_crc().to_be()) }
         };
-
 
         let mut path = Vec::with_capacity(len);
 
@@ -325,10 +306,10 @@ impl ShortCrypt {
 
         let mut result = base64_url::encode_and_push_to_string(&encrypted, result);
 
-        let mut sum = base as u64;
+        let mut sum = u64::from(base);
 
         for &n in result.as_bytes() {
-            sum = sum.wrapping_add(n as u64);
+            sum = sum.wrapping_add(u64::from(n));
         }
 
         let base_index = ((self.key_sum_rev ^ sum) % ((result.len() + 1) as u64)) as usize;
@@ -338,7 +319,11 @@ impl ShortCrypt {
         result
     }
 
-    pub fn encrypt_to_url_component_and_push_to_string<T: ?Sized + AsRef<[u8]>, S: Into<String>>(&self, data: &T, output: S) -> String {
+    pub fn encrypt_to_url_component_and_push_to_string<T: ?Sized + AsRef<[u8]>, S: Into<String>>(
+        &self,
+        data: &T,
+        output: S,
+    ) -> String {
         let (base, encrypted) = self.encrypt(data);
 
         let base = u8_to_string_64!(base);
@@ -351,20 +336,24 @@ impl ShortCrypt {
 
         let mut output = base64_url::encode_and_push_to_string(&encrypted, output);
 
-        let mut sum = base as u64;
+        let mut sum = u64::from(base);
 
         for &n in output.as_bytes().iter().skip(original_len) {
-            sum = sum.wrapping_add(n as u64);
+            sum = sum.wrapping_add(u64::from(n));
         }
 
-        let base_index = ((self.key_sum_rev ^ sum) % ((output.len() - original_len + 1) as u64)) as usize;
+        let base_index =
+            ((self.key_sum_rev ^ sum) % ((output.len() - original_len + 1) as u64)) as usize;
 
         output.insert(original_len + base_index, base_char);
 
         output
     }
 
-    pub fn decrypt_url_component<S: AsRef<str>>(&self, url_component: S) -> Result<Vec<u8>, &'static str> {
+    pub fn decrypt_url_component<S: AsRef<str>>(
+        &self,
+        url_component: S,
+    ) -> Result<Vec<u8>, &'static str> {
         let bytes = url_component.as_ref().as_bytes();
         let len = bytes.len();
 
@@ -376,7 +365,7 @@ impl ShortCrypt {
             let mut sum = 0u64;
 
             for &n in bytes {
-                sum = sum.wrapping_add(n as u64);
+                sum = sum.wrapping_add(u64::from(n));
             }
 
             ((self.key_sum_rev ^ sum) % (len as u64)) as usize
@@ -390,12 +379,17 @@ impl ShortCrypt {
 
         let encrypted_base64_url = [&bytes[..base_index], &bytes[(base_index + 1)..]].concat();
 
-        let encrypted = base64_url::decode(&encrypted_base64_url).map_err(|_| "The URL component is incorrect.")?;
+        let encrypted = base64_url::decode(&encrypted_base64_url)
+            .map_err(|_| "The URL component is incorrect.")?;
 
         self.decrypt(&(base, encrypted))
     }
 
-    pub fn decrypt_url_component_and_push_to_vec<S: AsRef<str>>(&self, url_component: S, mut output: Vec<u8>) -> Result<Vec<u8>, &'static str> {
+    pub fn decrypt_url_component_and_push_to_vec<S: AsRef<str>>(
+        &self,
+        url_component: S,
+        mut output: Vec<u8>,
+    ) -> Result<Vec<u8>, &'static str> {
         let bytes = url_component.as_ref().as_bytes();
         let len = bytes.len();
 
@@ -407,7 +401,7 @@ impl ShortCrypt {
             let mut sum = 0u64;
 
             for &n in bytes {
-                sum = sum.wrapping_add(n as u64);
+                sum = sum.wrapping_add(u64::from(n));
             }
 
             ((self.key_sum_rev ^ sum) % (len as u64)) as usize
@@ -421,7 +415,8 @@ impl ShortCrypt {
 
         let encrypted_base64_url = [&bytes[..base_index], &bytes[(base_index + 1)..]].concat();
 
-        let encrypted = base64_url::decode(&encrypted_base64_url).map_err(|_| "The URL component is incorrect.")?;
+        let encrypted = base64_url::decode(&encrypted_base64_url)
+            .map_err(|_| "The URL component is incorrect.")?;
 
         let len = encrypted.len();
 
@@ -441,12 +436,17 @@ impl ShortCrypt {
 
         let mut result = String::with_capacity(1 + ((encrypted.len() * 8 + 4) / 5));
 
-        result.push_str(&base32::encode(base32::Alphabet::RFC4648 { padding: false }, &encrypted));
+        result.push_str(&base32::encode(
+            base32::Alphabet::RFC4648 {
+                padding: false,
+            },
+            &encrypted,
+        ));
 
-        let mut sum = base as u64;
+        let mut sum = u64::from(base);
 
         for &n in result.as_bytes() {
-            sum = sum.wrapping_add(n as u64);
+            sum = sum.wrapping_add(u64::from(n));
         }
 
         let base_index = ((self.key_sum_rev ^ sum) % ((result.len() + 1) as u64)) as usize;
@@ -456,7 +456,14 @@ impl ShortCrypt {
         result
     }
 
-    pub fn encrypt_to_qr_code_alphanumeric_and_push_to_string<T: ?Sized + AsRef<[u8]>, S: Into<String>>(&self, data: &T, output: S) -> String {
+    pub fn encrypt_to_qr_code_alphanumeric_and_push_to_string<
+        T: ?Sized + AsRef<[u8]>,
+        S: Into<String>,
+    >(
+        &self,
+        data: &T,
+        output: S,
+    ) -> String {
         let (base, encrypted) = self.encrypt(data);
 
         let base = u8_to_string_32!(base);
@@ -467,22 +474,31 @@ impl ShortCrypt {
 
         let original_len = output.len();
 
-        output.push_str(&base32::encode(base32::Alphabet::RFC4648 { padding: false }, &encrypted));
+        output.push_str(&base32::encode(
+            base32::Alphabet::RFC4648 {
+                padding: false,
+            },
+            &encrypted,
+        ));
 
-        let mut sum = base as u64;
+        let mut sum = u64::from(base);
 
         for &n in output.as_bytes().iter().skip(original_len) {
-            sum = sum.wrapping_add(n as u64);
+            sum = sum.wrapping_add(u64::from(n));
         }
 
-        let base_index = ((self.key_sum_rev ^ sum) % ((output.len() - original_len + 1) as u64)) as usize;
+        let base_index =
+            ((self.key_sum_rev ^ sum) % ((output.len() - original_len + 1) as u64)) as usize;
 
         output.insert(original_len + base_index, base_char);
 
         output
     }
 
-    pub fn decrypt_qr_code_alphanumeric<S: AsRef<str>>(&self, qr_code_alphanumeric: S) -> Result<Vec<u8>, &'static str> {
+    pub fn decrypt_qr_code_alphanumeric<S: AsRef<str>>(
+        &self,
+        qr_code_alphanumeric: S,
+    ) -> Result<Vec<u8>, &'static str> {
         let bytes = qr_code_alphanumeric.as_ref().as_bytes();
         let len = bytes.len();
 
@@ -494,7 +510,7 @@ impl ShortCrypt {
             let mut sum = 0u64;
 
             for &n in bytes {
-                sum = sum.wrapping_add(n as u64);
+                sum = sum.wrapping_add(u64::from(n));
             }
 
             ((self.key_sum_rev ^ sum) % (len as u64)) as usize
@@ -506,17 +522,28 @@ impl ShortCrypt {
             return Err("The QR code alphanumeric text is incorrect.");
         }
 
-        let encrypted_base32 = String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat()).map_err(|_| "The QR code alphanumeric text is incorrect.")?;
+        let encrypted_base32 =
+            String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat())
+                .map_err(|_| "The QR code alphanumeric text is incorrect.")?;
 
-        let encrypted = match base32::decode(base32::Alphabet::RFC4648 { padding: false }, &encrypted_base32) {
+        let encrypted = match base32::decode(
+            base32::Alphabet::RFC4648 {
+                padding: false,
+            },
+            &encrypted_base32,
+        ) {
             Some(t) => t,
-            None => return Err("The QR code alphanumeric text is incorrect.")
+            None => return Err("The QR code alphanumeric text is incorrect."),
         };
 
         self.decrypt(&(base, encrypted))
     }
 
-    pub fn decrypt_qr_code_alphanumeric_and_push_to_vec<S: AsRef<str>>(&self, qr_code_alphanumeric: S, mut output: Vec<u8>) -> Result<Vec<u8>, &'static str> {
+    pub fn decrypt_qr_code_alphanumeric_and_push_to_vec<S: AsRef<str>>(
+        &self,
+        qr_code_alphanumeric: S,
+        mut output: Vec<u8>,
+    ) -> Result<Vec<u8>, &'static str> {
         let bytes = qr_code_alphanumeric.as_ref().as_bytes();
         let len = bytes.len();
 
@@ -528,7 +555,7 @@ impl ShortCrypt {
             let mut sum = 0u64;
 
             for &n in bytes {
-                sum = sum.wrapping_add(n as u64);
+                sum = sum.wrapping_add(u64::from(n));
             }
 
             ((self.key_sum_rev ^ sum) % (len as u64)) as usize
@@ -540,11 +567,18 @@ impl ShortCrypt {
             return Err("The QR code alphanumeric text is incorrect.");
         }
 
-        let encrypted_base32 = String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat()).map_err(|_| "The QR code alphanumeric text is incorrect.")?;
+        let encrypted_base32 =
+            String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat())
+                .map_err(|_| "The QR code alphanumeric text is incorrect.")?;
 
-        let encrypted = match base32::decode(base32::Alphabet::RFC4648 { padding: false }, &encrypted_base32) {
+        let encrypted = match base32::decode(
+            base32::Alphabet::RFC4648 {
+                padding: false,
+            },
+            &encrypted_base32,
+        ) {
             Some(t) => t,
-            None => return Err("The QR code alphanumeric text is incorrect.")
+            None => return Err("The QR code alphanumeric text is incorrect."),
         };
 
         let len = encrypted.len();
