@@ -152,7 +152,7 @@ impl ShortCrypt {
         let key_bytes = key.as_ref().as_bytes();
 
         let hashed_key = {
-            let mut crc64ecma = CRCu64::crc64();
+            let mut crc64ecma = CRCu64::crc64we();
 
             crc64ecma.digest(key_bytes);
 
@@ -206,7 +206,7 @@ impl ShortCrypt {
         let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
 
         let hashed_array: [u8; 8] = {
-            let mut crc64ecma = CRCu64::crc64();
+            let mut crc64ecma = CRCu64::crc64we();
 
             crc64ecma.digest(&[m]);
             crc64ecma.digest(&sum);
@@ -263,7 +263,7 @@ impl ShortCrypt {
         let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
 
         let hashed_array: [u8; 8] = {
-            let mut crc64ecma = CRCu64::crc64();
+            let mut crc64ecma = CRCu64::crc64we();
 
             crc64ecma.digest(&[m]);
             crc64ecma.digest(&sum);
