@@ -5,7 +5,7 @@ ShortCrypt
 
 ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance.
 Even if these data are similar, the ciphers are still pretty different.
-The most important thing is that a cipher is only **4 bits** larger than its plaintext so that it is suitable for data used in an URL or a QR Code. Besides these, it is also an ideal candidate for serial number generation.
+The most important thing is that a cipher is only **4 bits** larger than its plaintext so that it is suitable for data used in a URL or a QR Code. Besides these, it is also an ideal candidate for serial number generation.
 
 ## Examples
 
