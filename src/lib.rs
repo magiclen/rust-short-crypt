@@ -95,7 +95,7 @@ impl Debug for ShortCrypt {
 }
 
 macro_rules! u8_to_string_64 {
-    ($i:expr) => {{
+    ($i:expr) => {
         if $i < 10 {
             $i + b'0'
         } else if $i >= 10 && $i < 36 {
@@ -107,43 +107,43 @@ macro_rules! u8_to_string_64 {
         } else {
             b'_'
         }
-    }};
+    };
 }
 
 macro_rules! string_64_to_u8 {
-    ($c:expr) => {{
+    ($c:expr) => {
         if $c >= b'0' && $c <= b'9' {
             $c - b'0'
-        } else if $c >= b'A' && $c < b'Z' {
+        } else if $c >= b'A' && $c <= b'Z' {
             $c + 10 - b'A'
-        } else if $c >= b'a' && $c < b'z' {
+        } else if $c >= b'a' && $c <= b'z' {
             $c + 36 - b'a'
         } else if $c == b'-' {
             62
         } else {
             63
         }
-    }};
+    };
 }
 
 macro_rules! u8_to_string_32 {
-    ($i:expr) => {{
+    ($i:expr) => {
         if $i < 10 {
             $i + b'0'
         } else {
             $i - 10 + b'A'
         }
-    }};
+    };
 }
 
 macro_rules! string_32_to_u8 {
-    ($c:expr) => {{
+    ($c:expr) => {
         if $c >= b'0' && $c <= b'9' {
             $c - b'0'
         } else {
             $c + 10 - b'A'
         }
-    }};
+    };
 }
 
 impl ShortCrypt {
@@ -152,11 +152,11 @@ impl ShortCrypt {
         let key_bytes = key.as_ref().as_bytes();
 
         let hashed_key = {
-            let mut crc64ecma = CRCu64::crc64we();
+            let mut hasher = CRCu64::crc64we();
 
-            crc64ecma.digest(key_bytes);
+            hasher.digest(key_bytes);
 
-            unsafe { transmute(crc64ecma.get_crc().to_be()) }
+            unsafe { transmute(hasher.get_crc().to_be()) }
         };
 
         let mut key_sum = 0u64;
@@ -206,12 +206,12 @@ impl ShortCrypt {
         let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
 
         let hashed_array: [u8; 8] = {
-            let mut crc64ecma = CRCu64::crc64we();
+            let mut hasher = CRCu64::crc64we();
 
-            crc64ecma.digest(&[m]);
-            crc64ecma.digest(&sum);
+            hasher.digest(&[m]);
+            hasher.digest(&sum);
 
-            unsafe { transmute(crc64ecma.get_crc().to_be()) }
+            unsafe { transmute(hasher.get_crc().to_be()) }
         };
 
         let mut path = Vec::with_capacity(len);
@@ -263,12 +263,12 @@ impl ShortCrypt {
         let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
 
         let hashed_array: [u8; 8] = {
-            let mut crc64ecma = CRCu64::crc64we();
+            let mut hasher = CRCu64::crc64we();
 
-            crc64ecma.digest(&[m]);
-            crc64ecma.digest(&sum);
+            hasher.digest(&[m]);
+            hasher.digest(&sum);
 
-            unsafe { transmute(crc64ecma.get_crc().to_be()) }
+            unsafe { transmute(hasher.get_crc().to_be()) }
         };
 
         let mut path = Vec::with_capacity(len);
