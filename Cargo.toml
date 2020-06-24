@@ -1,12 +1,12 @@
 [package]
 name = "short-crypt"
-version = "1.0.18"
+version = "1.1.0"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/rust-short-crypt"
 homepage = "https://magiclen.org/short-crypt"
 keywords = ["crypto", "qrcode", "url", "encrypt", "decrypt"]
-categories = ["algorithms", "cryptography"]
+categories = ["no-std", "algorithms", "cryptography"]
 description= "ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance."
 readme = "README.md"
 license = "MIT"
@@ -19,4 +19,8 @@ branch = "master"
 crc-any = "2.3"
 base64-url = "1.4"
 base32 = "0.4"
-debug-helper = "0.3"
+debug-helper = {version = "0.3", optional = true}
+
+[features]
+default = ["std"]
+std = ["debug-helper"]

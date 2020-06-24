@@ -67,6 +67,16 @@ let url = "https://magiclen.org/".to_string();
 assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric_and_push_to_string("articles", url));
 ```
 
+## No Std
+
+Disable the default features to compile this crate without std.
+
+```toml
+[dependencies.short-crypt]
+version = "*"
+default-features = false
+```
+
 ## Crates.io
 
 https://crates.io/crates/short-crypt
