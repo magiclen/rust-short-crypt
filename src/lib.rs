@@ -64,37 +64,25 @@ let url = "https://magiclen.org/".to_string();
 
 assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanumeric_and_push_to_string("articles", url));
 ```
-
-## No Std
-
-Disable the default features to compile this crate without std.
-
-```toml
-[dependencies.short-crypt]
-version = "*"
-default-features = false
-```
 */
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
 
+#[macro_use]
 extern crate alloc;
 
 pub extern crate base32;
 pub extern crate base64_url;
 extern crate crc_any;
 
-#[cfg(feature = "std")]
 #[macro_use]
 extern crate debug_helper;
 
+use core::fmt::{self, Debug, Formatter};
 use core::mem::transmute;
 
 use alloc::string::String;
 use alloc::vec::Vec;
-
-#[cfg(feature = "std")]
-use std::fmt::{self, Debug, Formatter};
 
 pub use base64_url::base64;
 
@@ -108,7 +96,6 @@ pub struct ShortCrypt {
     key_sum_rev: u64,
 }
 
-#[cfg(feature = "std")]
 impl Debug for ShortCrypt {
     #[inline]
     fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {

@@ -10,10 +10,6 @@ os:
   - osx
   - windows
 
-script:
-  - cargo test --verbose
-  - cargo test --verbose --no-default-features
-
 matrix:
   include:
     - rust: stable
