@@ -1,6 +1,6 @@
 [package]
 name = "short-crypt"
-version = "1.0.17"
+version = "1.0.18"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/rust-short-crypt"
@@ -17,6 +17,6 @@ branch = "master"
 
 [dependencies]
 crc-any = "2.3"
-base64-url = "1.1.7"
+base64-url = "1.4"
 base32 = "0.4"
 debug-helper = "0.3"

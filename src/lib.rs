@@ -302,9 +302,9 @@ impl ShortCrypt {
 
         let base_char = base as char;
 
-        let result = String::with_capacity(1 + ((encrypted.len() * 4 + 2) / 3));
+        let mut result = String::with_capacity(1 + ((encrypted.len() * 4 + 2) / 3));
 
-        let mut result = base64_url::encode_and_push_to_string(&encrypted, result);
+        base64_url::encode_to_string(&encrypted, &mut result);
 
         let mut sum = u64::from(base);
 
@@ -330,11 +330,11 @@ impl ShortCrypt {
 
         let base_char = base as char;
 
-        let output = output.into();
+        let mut output = output.into();
 
         let original_len = output.len();
 
-        let mut output = base64_url::encode_and_push_to_string(&encrypted, output);
+        base64_url::encode_to_string(&encrypted, &mut output);
 
         let mut sum = u64::from(base);
 
