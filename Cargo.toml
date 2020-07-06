@@ -1,6 +1,6 @@
 [package]
 name = "short-crypt"
-version = "1.0.20"
+version = "1.0.21"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/rust-short-crypt"

@@ -170,7 +170,7 @@ impl ShortCrypt {
 
         let mut key_sum = 0u64;
 
-        for &n in key_bytes {
+        for n in key_bytes.iter().copied() {
             key_sum = key_sum.wrapping_add(u64::from(n));
         }
 
@@ -264,7 +264,7 @@ impl ShortCrypt {
         let mut m = base;
         let mut sum = u64::from(base);
 
-        for &v in data.iter() {
+        for v in data.iter().copied() {
             m ^= v;
             sum = sum.wrapping_add(u64::from(v));
         }
@@ -317,7 +317,7 @@ impl ShortCrypt {
 
         let mut sum = u64::from(base);
 
-        for &n in result.as_bytes() {
+        for n in result.bytes() {
             sum = sum.wrapping_add(u64::from(n));
         }
 
@@ -347,7 +347,7 @@ impl ShortCrypt {
 
         let mut sum = u64::from(base);
 
-        for &n in output.as_bytes().iter().skip(original_len) {
+        for n in output.bytes().skip(original_len) {
             sum = sum.wrapping_add(u64::from(n));
         }
 
@@ -373,7 +373,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in bytes {
+            for n in bytes.iter().copied() {
                 sum = sum.wrapping_add(u64::from(n));
             }
 
@@ -409,7 +409,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in bytes {
+            for n in bytes.iter().copied() {
                 sum = sum.wrapping_add(u64::from(n));
             }
 
@@ -454,7 +454,7 @@ impl ShortCrypt {
 
         let mut sum = u64::from(base);
 
-        for &n in result.as_bytes() {
+        for n in result.bytes() {
             sum = sum.wrapping_add(u64::from(n));
         }
 
@@ -492,7 +492,7 @@ impl ShortCrypt {
 
         let mut sum = u64::from(base);
 
-        for &n in output.as_bytes().iter().skip(original_len) {
+        for n in output.bytes().skip(original_len) {
             sum = sum.wrapping_add(u64::from(n));
         }
 
@@ -518,7 +518,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in bytes {
+            for n in bytes.iter().copied() {
                 sum = sum.wrapping_add(u64::from(n));
             }
 
@@ -563,7 +563,7 @@ impl ShortCrypt {
         let base_index = {
             let mut sum = 0u64;
 
-            for &n in bytes {
+            for n in bytes.iter().copied() {
                 sum = sum.wrapping_add(u64::from(n));
             }
 
