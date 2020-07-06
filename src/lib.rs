@@ -230,7 +230,7 @@ impl ShortCrypt {
             path.push((hashed_array[index] ^ self.hashed_key[index]) as usize % len);
         }
 
-        for (i, &p) in path.iter().enumerate() {
+        for (i, p) in path.iter().copied().enumerate() {
             if i == p {
                 continue;
             }
@@ -289,7 +289,7 @@ impl ShortCrypt {
 
         let mut data = data.to_vec();
 
-        for (i, &p) in path.iter().enumerate().rev() {
+        for (i, p) in path.iter().copied().enumerate().rev() {
             if i == p {
                 continue;
             }
