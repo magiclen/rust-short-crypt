@@ -10,7 +10,7 @@ categories = ["no-std", "algorithms", "cryptography"]
 description = "ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance."
 readme = "README.md"
 license = "MIT"
-include = ["src/**/*", "Cargo.toml", "LICENSE", "README.md"]
+include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 
 [badges.travis-ci]
 repository = "magiclen/rust-short-crypt"
