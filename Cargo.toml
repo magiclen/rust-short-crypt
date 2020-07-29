@@ -1,16 +1,16 @@
 [package]
 name = "short-crypt"
-version = "1.0.22"
+version = "1.0.23"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/rust-short-crypt"
 homepage = "https://magiclen.org/short-crypt"
 keywords = ["crypto", "qrcode", "url", "encrypt", "decrypt"]
 categories = ["no-std", "algorithms", "cryptography"]
-description= "ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance."
+description = "ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance."
 readme = "README.md"
 license = "MIT"
-include = ["src/**/*", "Cargo.toml"]
+include = ["src/**/*", "Cargo.toml", "LICENSE", "README.md"]
 
 [badges.travis-ci]
 repository = "magiclen/rust-short-crypt"
