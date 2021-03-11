@@ -107,9 +107,9 @@ macro_rules! u8_to_string_64 {
     ($i:expr) => {
         if $i < 10 {
             $i + b'0'
-        } else if $i >= 10 && $i < 36 {
+        } else if (10..36).contains(&$i) {
             $i - 10 + b'A'
-        } else if $i >= 36 && $i < 62 {
+        } else if (36..62).contains(&$i) {
             $i - 36 + b'a'
         } else if $i == 62 {
             b'-'
