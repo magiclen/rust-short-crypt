@@ -1,7 +1,7 @@
 ShortCrypt
 ====================
 
-[![Build Status](https://travis-ci.org/magiclen/rust-short-crypt.svg?branch=master)](https://travis-ci.org/magiclen/rust-short-crypt)
+[![CI](https://github.com/magiclen/rust-short-crypt/actions/workflows/ci.yml/badge.svg)](https://github.com/magiclen/rust-short-crypt/actions/workflows/ci.yml)
 
 ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance.
 Even if these data are similar, the ciphers are still pretty different.
