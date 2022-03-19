@@ -73,13 +73,8 @@ extern crate alloc;
 
 pub extern crate base32;
 pub extern crate base64_url;
-extern crate crc_any;
-
-#[macro_use]
-extern crate debug_helper;
 
 use core::fmt::{self, Debug, Formatter};
-use core::mem::transmute;
 
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -99,7 +94,7 @@ pub struct ShortCrypt {
 impl Debug for ShortCrypt {
     #[inline]
     fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
-        impl_debug_for_struct!(ShortCrypt, f, self, let .hashed_key = self.hashed_key.as_ref(), (.key_sum_rev, "{:X}", self.key_sum_rev));
+        debug_helper::impl_debug_for_struct!(ShortCrypt, f, self, let .hashed_key = self.hashed_key.as_ref(), (.key_sum_rev, "{:X}", self.key_sum_rev));
     }
 }
 
@@ -165,7 +160,7 @@ impl ShortCrypt {
 
             hasher.digest(key_bytes);
 
-            unsafe { transmute(hasher.get_crc().to_be()) }
+            hasher.get_crc().to_be_bytes()
         };
 
         let mut key_sum = 0u64;
@@ -212,7 +207,7 @@ impl ShortCrypt {
             sum = sum.wrapping_add(u64::from(v));
         }
 
-        let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
+        let sum: [u8; 8] = sum.to_be_bytes();
 
         let hashed_array: [u8; 8] = {
             let mut hasher = CRCu64::crc64we();
@@ -220,7 +215,7 @@ impl ShortCrypt {
             hasher.digest(&[m]);
             hasher.digest(&sum);
 
-            unsafe { transmute(hasher.get_crc().to_be()) }
+            hasher.get_crc().to_be_bytes()
         };
 
         let mut path = Vec::with_capacity(len);
@@ -269,7 +264,7 @@ impl ShortCrypt {
             sum = sum.wrapping_add(u64::from(v));
         }
 
-        let sum: [u8; 8] = unsafe { transmute(sum.to_be()) };
+        let sum: [u8; 8] = sum.to_be_bytes();
 
         let hashed_array: [u8; 8] = {
             let mut hasher = CRCu64::crc64we();
@@ -277,7 +272,7 @@ impl ShortCrypt {
             hasher.digest(&[m]);
             hasher.digest(&sum);
 
-            unsafe { transmute(hasher.get_crc().to_be()) }
+            hasher.get_crc().to_be_bytes()
         };
 
         let mut path = Vec::with_capacity(len);

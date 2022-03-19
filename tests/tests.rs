@@ -1,5 +1,3 @@
-extern crate short_crypt;
-
 use short_crypt::ShortCrypt;
 
 #[test]
