@@ -186,7 +186,7 @@ impl ShortCrypt {
             let mut crc8 = CRCu8::crc8cdma2000();
 
             crc8.digest(data);
-            crc8.get_crc() as u8
+            crc8.get_crc()
         };
 
         let base = hashed_value % 32;
