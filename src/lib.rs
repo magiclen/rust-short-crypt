@@ -74,20 +74,17 @@ extern crate alloc;
 pub extern crate base32;
 pub extern crate base64_url;
 
+use alloc::{string::String, vec::Vec};
 use core::fmt::{self, Debug, Formatter};
 
-use alloc::string::String;
-use alloc::vec::Vec;
-
 pub use base64_url::base64;
-
 use crc_any::{CRCu64, CRCu8};
 
 /// A tuple. The first `u8` value is the **base** which only takes 4 bits. The second `Vec<u8>` value is the **body** whose size is equal to the plaintext. You can use your own algorithms to combine them together, or just use `encrypt_to_url_component` or `encrypt_to_qr_code_alphanumeric` to output them as a random-like string.
 pub type Cipher = (u8, Vec<u8>);
 
 pub struct ShortCrypt {
-    hashed_key: [u8; 8],
+    hashed_key:  [u8; 8],
     key_sum_rev: u64,
 }
 
@@ -442,7 +439,7 @@ impl ShortCrypt {
 
         result.push_str(&base32::encode(
             base32::Alphabet::RFC4648 {
-                padding: false,
+                padding: false
             },
             &encrypted,
         ));
@@ -480,7 +477,7 @@ impl ShortCrypt {
 
         output.push_str(&base32::encode(
             base32::Alphabet::RFC4648 {
-                padding: false,
+                padding: false
             },
             &encrypted,
         ));
@@ -532,7 +529,7 @@ impl ShortCrypt {
 
         let encrypted = match base32::decode(
             base32::Alphabet::RFC4648 {
-                padding: false,
+                padding: false
             },
             &encrypted_base32,
         ) {
@@ -577,7 +574,7 @@ impl ShortCrypt {
 
         let encrypted = match base32::decode(
             base32::Alphabet::RFC4648 {
-                padding: false,
+                padding: false
             },
             &encrypted_base32,
         ) {
