@@ -9,7 +9,6 @@ homepage = "https://magiclen.org/short-crypt"
 keywords = ["crypto", "qrcode", "url", "encrypt", "decrypt"]
 categories = ["no-std", "algorithms", "cryptography"]
 description = "ShortCrypt is a very simple encryption library, which aims to encrypt any data into something random at first glance."
-readme = "README.md"
 license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 
