@@ -2,8 +2,8 @@
 name = "short-crypt"
 version = "1.0.28"
 authors = ["Magic Len <len@magiclen.org>"]
-edition = "2021"
-rust-version = "1.56"
+edition = "2024"
+rust-version = "1.87"
 repository = "https://github.com/magiclen/rust-short-crypt"
 homepage = "https://magiclen.org/short-crypt"
 keywords = ["crypto", "qrcode", "url", "encrypt", "decrypt"]
@@ -13,7 +13,7 @@ license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
-crc-any = "2.3"
-base64-url = "2"
-base32 = "0.4"
+crc-any = "3"
+base64-url = "3"
+base32 = "0.5"
 debug-helper = "0.3"

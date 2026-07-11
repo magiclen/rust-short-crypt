@@ -77,7 +77,7 @@ use alloc::{string::String, vec::Vec};
 use core::fmt::{self, Debug, Formatter};
 
 pub use base64_url::base64;
-use crc_any::{CRCu64, CRCu8};
+use crc_any::{CRCu8, CRCu64};
 
 /// A tuple. The first `u8` value is the **base** which only takes 4 bits. The second `Vec<u8>` value is the **body** whose size is equal to the plaintext. You can use your own algorithms to combine them together, or just use `encrypt_to_url_component` or `encrypt_to_qr_code_alphanumeric` to output them as a random-like string.
 pub type Cipher = (u8, Vec<u8>);
@@ -128,21 +128,13 @@ macro_rules! string_64_to_u8 {
 
 macro_rules! u8_to_string_32 {
     ($i:expr) => {
-        if $i < 10 {
-            $i + b'0'
-        } else {
-            $i - 10 + b'A'
-        }
+        if $i < 10 { $i + b'0' } else { $i - 10 + b'A' }
     };
 }
 
 macro_rules! string_32_to_u8 {
     ($c:expr) => {
-        if $c >= b'0' && $c <= b'9' {
-            $c - b'0'
-        } else {
-            $c + 10 - b'A'
-        }
+        if $c >= b'0' && $c <= b'9' { $c - b'0' } else { $c + 10 - b'A' }
     };
 }
 
@@ -302,7 +294,7 @@ impl ShortCrypt {
 
         let base_char = base as char;
 
-        let mut result = String::with_capacity(1 + ((encrypted.len() * 4 + 2) / 3));
+        let mut result = String::with_capacity(1 + (encrypted.len() * 4).div_ceil(3));
 
         base64_url::encode_to_string(&encrypted, &mut result);
 
@@ -434,10 +426,10 @@ impl ShortCrypt {
 
         let base_char = base as char;
 
-        let mut result = String::with_capacity(1 + ((encrypted.len() * 8 + 4) / 5));
+        let mut result = String::with_capacity(1 + (encrypted.len() * 8).div_ceil(5));
 
         result.push_str(&base32::encode(
-            base32::Alphabet::RFC4648 {
+            base32::Alphabet::Rfc4648 {
                 padding: false
             },
             &encrypted,
@@ -475,7 +467,7 @@ impl ShortCrypt {
         let original_len = output.len();
 
         output.push_str(&base32::encode(
-            base32::Alphabet::RFC4648 {
+            base32::Alphabet::Rfc4648 {
                 padding: false
             },
             &encrypted,
@@ -527,7 +519,7 @@ impl ShortCrypt {
                 .map_err(|_| "The QR code alphanumeric text is incorrect.")?;
 
         let encrypted = match base32::decode(
-            base32::Alphabet::RFC4648 {
+            base32::Alphabet::Rfc4648 {
                 padding: false
             },
             &encrypted_base32,
@@ -572,7 +564,7 @@ impl ShortCrypt {
                 .map_err(|_| "The QR code alphanumeric text is incorrect.")?;
 
         let encrypted = match base32::decode(
-            base32::Alphabet::RFC4648 {
+            base32::Alphabet::Rfc4648 {
                 padding: false
             },
             &encrypted_base32,
