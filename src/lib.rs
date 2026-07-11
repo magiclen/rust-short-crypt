@@ -68,7 +68,6 @@ assert_eq!("https://magiclen.org/3BHNNR45XZH8PU", sc.encrypt_to_qr_code_alphanum
 
 #![no_std]
 
-#[macro_use]
 extern crate alloc;
 
 pub extern crate base32;
