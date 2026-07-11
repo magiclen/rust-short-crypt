@@ -16,4 +16,4 @@ include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
 crc-any = "3"
 base64-url = "3"
 base32 = "0.5"
-debug-helper = "0.3"
+debug-helper = "0.3.14"
