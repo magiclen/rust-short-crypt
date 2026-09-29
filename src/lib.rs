@@ -14,8 +14,6 @@ ShortCrypt does not provide cryptographic authentication and must not be used to
 `encrypt` method can create a `Cipher` tuple separating into a **base** and a **body** of the cipher. The **base** contains 5 bits of information and is stored as a `u8`, while the size of the **body** is equal to the plaintext.
 
 ```rust
-extern crate short_crypt;
-
 use short_crypt::ShortCrypt;
 
 let sc = ShortCrypt::new("magickey");
@@ -28,8 +26,6 @@ assert_eq!("articles".as_bytes().to_vec(), sc.decrypt(&(8, vec![216, 78, 214, 19
 `encrypt_to_url_component` method is common for encryption in most cases. After ShortCrypt `encrypt` a plaintext, it encodes the cipher into a random-like string based on Base64-URL format so that it can be concatenated with URLs.
 
 ```rust
-extern crate short_crypt;
-
 use short_crypt::ShortCrypt;
 
 let sc = ShortCrypt::new("magickey");
@@ -41,8 +37,6 @@ assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_url_component("2E87Wx52-Tv
 `encrypt_to_qr_code_alphanumeric` method is usually used for encrypting something into a QR code. After ShortCrypt `encrypt` a plaintext, it encodes the cipher into a random-like string based on Base32 format so that it can be inserted into a QR code with the compatibility with alphanumeric mode.
 
 ```rust
-extern crate short_crypt;
-
 use short_crypt::ShortCrypt;
 
 let sc = ShortCrypt::new("magickey");
@@ -54,8 +48,6 @@ assert_eq!("articles".as_bytes().to_vec(), sc.decrypt_qr_code_alphanumeric("3BHN
 Besides, in order to reduce the copy times of strings, you can also use `encrypt_to_url_component_and_push_to_string`, `encrypt_to_qr_code_alphanumeric_and_push_to_string` methods to use the same memory space.
 
 ```rust
-extern crate short_crypt;
-
 use short_crypt::ShortCrypt;
 
 let sc = ShortCrypt::new("magickey");
@@ -87,6 +79,7 @@ use crc_any::{CRCu8, CRCu64};
 pub type Cipher = (u8, Vec<u8>);
 
 /// A deterministic encryption context derived from a string key.
+#[derive(Clone)]
 pub struct ShortCrypt {
     hashed_key:  [u8; 8],
     key_sum_rev: u64,
@@ -123,6 +116,21 @@ fn checksum_base(data: &[u8]) -> u8 {
     crc8.get_crc() % 32
 }
 
+#[inline]
+fn sum_bytes(bytes: &[u8]) -> u64 {
+    bytes.iter().fold(0u64, |sum, &n| sum.wrapping_add(u64::from(n)))
+}
+
+#[inline]
+fn permutation_seed(m: u8, sum: u64) -> [u8; 8] {
+    let mut hasher = CRCu64::crc64we();
+
+    hasher.update(&[m]);
+    hasher.update(&sum.to_be_bytes());
+
+    hasher.get_crc().to_be_bytes()
+}
+
 impl ShortCrypt {
     /// Creates a new `ShortCrypt` instance from a string key.
     pub fn new<S: AsRef<str>>(key: S) -> ShortCrypt {
@@ -136,13 +144,7 @@ impl ShortCrypt {
             hasher.get_crc().to_be_bytes()
         };
 
-        let mut key_sum = 0u64;
-
-        for n in key_bytes.iter().copied() {
-            key_sum = key_sum.wrapping_add(u64::from(n));
-        }
-
-        let key_sum_rev = key_sum.reverse_bits();
+        let key_sum_rev = sum_bytes(key_bytes).reverse_bits();
 
         ShortCrypt {
             hashed_key,
@@ -174,16 +176,7 @@ impl ShortCrypt {
             sum = sum.wrapping_add(u64::from(v));
         }
 
-        let sum: [u8; 8] = sum.to_be_bytes();
-
-        let hashed_array: [u8; 8] = {
-            let mut hasher = CRCu64::crc64we();
-
-            hasher.update(&[m]);
-            hasher.update(&sum);
-
-            hasher.get_crc().to_be_bytes()
-        };
+        let hashed_array = permutation_seed(m, sum);
 
         for i in 0..len {
             let index = i % 8;
@@ -232,16 +225,7 @@ impl ShortCrypt {
             sum = sum.wrapping_add(u64::from(v));
         }
 
-        let sum: [u8; 8] = sum.to_be_bytes();
-
-        let hashed_array: [u8; 8] = {
-            let mut hasher = CRCu64::crc64we();
-
-            hasher.update(&[m]);
-            hasher.update(&sum);
-
-            hasher.get_crc().to_be_bytes()
-        };
+        let hashed_array = permutation_seed(m, sum);
 
         for i in (0..len).rev() {
             let index = i % 8;
@@ -274,11 +258,7 @@ impl ShortCrypt {
             return None;
         }
 
-        let mut sum = 0u64;
-
-        for n in bytes.iter().copied() {
-            sum = sum.wrapping_add(u64::from(n));
-        }
+        let sum = sum_bytes(bytes);
 
         let base_index = ((self.key_sum_rev ^ sum) % (bytes.len() as u64)) as usize;
         let base = decode_base(bytes[base_index])?;
@@ -288,11 +268,7 @@ impl ShortCrypt {
 
     fn insert_base(&self, base: u8, original_len: usize, mut output: String) -> String {
         let base = encode_base(base);
-        let mut sum = u64::from(base);
-
-        for n in output.bytes().skip(original_len) {
-            sum = sum.wrapping_add(u64::from(n));
-        }
+        let sum = u64::from(base).wrapping_add(sum_bytes(&output.as_bytes()[original_len..]));
 
         let base_index =
             ((self.key_sum_rev ^ sum) % ((output.len() - original_len + 1) as u64)) as usize;
@@ -318,6 +294,9 @@ impl ShortCrypt {
         let mut output = output.into();
 
         let original_len = output.len();
+
+        // One extra byte for the base character inserted later.
+        output.reserve((encrypted.len() * 4).div_ceil(3) + 1);
 
         base64_url::encode_to_string(&encrypted, &mut output);
 
@@ -376,12 +355,16 @@ impl ShortCrypt {
 
         let original_len = output.len();
 
-        output.push_str(&base32::encode(
+        let encoded = base32::encode(
             base32::Alphabet::Rfc4648 {
                 padding: false
             },
             &encrypted,
-        ));
+        );
+
+        // One extra byte for the base character inserted later.
+        output.reserve(encoded.len() + 1);
+        output.push_str(&encoded);
 
         self.insert_base(base, original_len, output)
     }
@@ -401,13 +384,15 @@ impl ShortCrypt {
         qr_code_alphanumeric: S,
         mut output: Vec<u8>,
     ) -> Result<Vec<u8>, &'static str> {
-        let bytes = qr_code_alphanumeric.as_ref().as_bytes();
-        let (base, base_index) =
-            self.extract_base(bytes).ok_or("The QR code alphanumeric text is incorrect.")?;
+        let qr_code_alphanumeric = qr_code_alphanumeric.as_ref();
+        let (base, base_index) = self
+            .extract_base(qr_code_alphanumeric.as_bytes())
+            .ok_or("The QR code alphanumeric text is incorrect.")?;
 
+        // The base character is ASCII, so slicing around it always hits char boundaries.
         let encrypted_base32 =
-            String::from_utf8([&bytes[..base_index], &bytes[(base_index + 1)..]].concat())
-                .map_err(|_| "The QR code alphanumeric text is incorrect.")?;
+            [&qr_code_alphanumeric[..base_index], &qr_code_alphanumeric[(base_index + 1)..]]
+                .concat();
 
         let encrypted = base32::decode(
             base32::Alphabet::Rfc4648 {
